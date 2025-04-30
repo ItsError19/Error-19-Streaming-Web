@@ -1,0 +1,7 @@
+echo "# Error-19-Streaming-Web" >> README.md
+git init
+git add README.md
+git commit -m "first commit front-end"
+git branch -M main
+git remote add origin https://github.com/ItsError19/Error-19-Streaming-Web.git
+git push -u origin main
