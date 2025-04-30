@@ -202,3 +202,53 @@ footer {
 .footer-links a:hover {
   color: #F19FFF; /* Lighter color for hover effect */
 }
+/*new suffs for movie.html*/
+.back-button {
+  display: inline-block;
+  margin: 10px 0;
+  color: #fff;
+  background: #e50914;
+  padding: 8px 12px;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.movie-details-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: auto;
+  background: #1e1e1e;
+  color: white;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.6);
+}
+
+header h1 {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/*second new suffs for movie.html*/
+.movie-detail-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+  background-color: #111;
+  color: #fff;
+  border-radius: 10px;
+}
+
+.movie-detail-poster {
+  max-width: 300px;
+  border-radius: 10px;
+}
+
+.movie-detail-info {
+  flex: 1;
+  min-width: 250px;
+}
+
+.movie-trailer {
+  margin-top: 20px;
+}
