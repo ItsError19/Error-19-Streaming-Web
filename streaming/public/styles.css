@@ -1,0 +1,204 @@
+/* General Body Styling */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #441752; /* Deep Charcoal background color */
+  color: #F5F5F5; /* Off White text color */
+}
+
+/* Header Styling */
+header {
+  background: #1D1E60; /* Deep Blue background */
+  padding: 1em;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  border-bottom: 2px solid #FF7F3E; /* Accent line */
+}
+
+header h1 {
+  margin: 0 1rem 0 0;
+  font-size: 24px;
+  color: #FF7F3E; /* Bronze Brown branding color */
+  font-family: 'Geo', sans-serif;
+}
+
+/* Input, Select, and Button Styling */
+input, select, button {
+  padding: 12px 16px;
+  border: 2px solid #8F87F1; /* Border color matches background for consistency */
+  border-radius: 8px; /* Rounded corners for smooth edges */
+  background: #8F87F1; /* Background color for form elements */
+  color: #FF7F3E; /* Text color */
+  font-family: 'Geo', sans-serif;
+  font-size: 16px;
+  transition: all 0.3s ease-in-out; /* Smooth transition for hover and focus effects */
+}
+
+/* Change input text color to white when typing */
+input:focus, input:not(:placeholder-shown) {
+  color: #FFFFFF; /* White text when typing */
+}
+
+/* Focus effect for input fields */
+input:focus {
+  border-color: #FF7F3E; /* Highlight border color on focus */
+  box-shadow: 0 0 5px rgba(255, 127, 62, 0.8); /* Soft glowing effect */
+}
+
+/* Focus effects for select and button as well */
+input:focus, select:focus, button:focus {
+  outline: none; /* Remove default browser outline */
+  border-color: #FF7F3E; /* Highlight border on focus */
+  box-shadow: 0 0 5px rgba(255, 127, 62, 0.8); /* Soft glowing effect */
+}
+
+/* Hover effects for input, select, and button */
+input:hover, select:hover, button:hover {
+  background-color: #FF7F3E; /* Lighter background color on hover */
+  color: #1D1E60; /* Dark text on hover */
+  border-color: #FF7F3E; /* Match border color to background */
+}
+
+/* Button Styling */
+button {
+  cursor: pointer; /* Pointer cursor for interactivity */
+  font-weight: bold; /* Bold text for button */
+}
+
+button:hover {
+  background-color: #F19FFF; /* Light color on button hover */
+}
+
+/* Movie Grid Styling */
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid layout */
+  gap: 16px;
+  padding: 2rem;
+}
+
+/* Movie Card Styling */
+.movie-card {
+  background: #685752; /* Warm brown background for card */
+  border-radius: 10px; /* Rounded corners for movie card */
+  overflow: hidden;
+  transition: transform 0.3s; /* Smooth transition on hover */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.6); /* Subtle shadow for depth */
+
+}
+
+.movie-card:hover {
+  background: #997C70; /* Lighter color on hover */
+  transform: scale(1.10); /* Slight zoom effect on hover */
+}
+
+/* Movie Poster Styling */
+.movie-poster {
+  width: 100%;
+  height: 300px;
+  
+  object-fit: cover; /* Ensure image covers the poster area */
+}
+
+/* Movie Info Styling */
+.movie-info {
+  padding: 10px;
+}
+
+/* Movie Title Styling */
+.movie-title {
+  margin: 0;
+  font-size: 18px;
+  color: #8F87F1; /* Consistent title color */
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Movie Overview Styling */
+.movie-overview {
+  font-size: 12px; /* Smaller text size for description */
+  margin: 8px 0;
+  color: white; /* Cool Gray for muted text */
+  font-family: 'Space Mono', monospace; /* Monospace font for overview */
+}
+
+/* Movie Date Styling */
+.movie-date {
+  font-size: 13px;
+  color: #FF7F3E; /* Accent color for movie release date */
+}
+
+.trending-title {
+  font-size: 1.8rem;
+  margin: 20px 10px;
+  color: #FF7F3E;
+  text-align: left;
+  font-weight: bold;
+}
+
+
+/* Video Modal Styling */
+#videoModal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
+}
+
+#videoModal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#videoModal.hidden {
+  display: none;
+}
+
+#videoPlayer {
+  width: 80%;
+  max-width: 800px;
+}
+
+
+/* Footer Styling */
+footer {
+  background: #1D1E60; /* Deep blue background for footer */
+  color: #F5F5F5; /* Off white text */
+  text-align: center;
+  padding: 1.5rem 1rem;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  left: 0;
+  border-top: 2px solid #FF7F3E; /* Accent line */
+  z-index: 999; /* Ensures footer stays at the bottom */
+}
+
+/* Footer Links Styling */
+.footer-links {
+  margin-top: 10px;
+}
+
+.footer-links a {
+  color: #FF7F3E; /* Accent color for footer links */
+  text-decoration: none; /* Remove underline */
+  margin: 0 8px;
+  font-size: 13px;
+  transition: color 0.2s; /* Smooth color transition on hover */
+}
+
+.footer-links a:hover {
+  color: #F19FFF; /* Lighter color for hover effect */
+}

@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Error 19</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Geo&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
+
+
+</head>
+<body>
+  <header>
+    <h1>Error 19</h1>
+    <select id="contentType">
+      <option value="movie">Movies</option>
+      <option value="tv">Series</option>
+    </select>
+    <select id="genreSelect">
+      <option value="">All Genres</option>
+      <option value="28">Action</option>
+      <option value="35">Comedy</option>
+      <option value="18">Drama</option>
+      <option value="27">Horror</option>
+      <option value="10749">Romance</option>
+      <option value="16">Animation</option>
+    </select>
+    <input type="text" id="searchInput" placeholder="Search for movies..." />
+    <button onclick="searchMovies()">Search</button>
+  </header>
+  <main>
+    <div id="movieList" class="movie-grid"></div>
+  </main>
+<div id="videoModal" class="hidden">
+  <video id="videoPlayer" controls class="hidden"></video>
+  <iframe id="youtubePlayer" class="hidden" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+  <button onclick="closeVideo()">Close</button>
+</div>
+
+  <script src="script.js"></script>
+</body>
+<footer>
+  <p>© 2025 Error 19. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="#">Privacy Policy</a> |
+    <a href="#">Terms of Service</a> |
+    <a href="#">Contact: +27661078458</a>
+  </div>
+</footer>
+
+</html>
