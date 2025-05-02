@@ -1,50 +1,82 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Error 19</title>
-  <link rel="stylesheet" href="styles.css">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Geo&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <header>
-    <h1>Error 19</h1>
-    <select id="contentType">
-      <option value="movie">Movies</option>
-      <option value="tv">Series</option>
-    </select>
-    <select id="genreSelect">
-      <option value="">All Genres</option>
-      <option value="28">Action</option>
-      <option value="35">Comedy</option>
-      <option value="18">Drama</option>
-      <option value="27">Horror</option>
-      <option value="10749">Romance</option>
-      <option value="16">Animation</option>
-    </select>
-    <input type="text" id="searchInput" placeholder="Search for movies..." />
-    <button onclick="searchMovies()">Search</button>
+<body class="bg-dark text-light">
+  <header class="bg-primary py-3">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-12 col-md-3 mb-3 mb-md-0">
+          <h1 class="m-0 text-warning font-geo">Error 19</h1>
+        </div>
+        <div class="col-12 col-md-9">
+          <div class="d-flex flex-column flex-md-row gap-2">
+            <select id="contentType" class="form-select bg-purple text-orange font-geo">
+              <option value="movie">Movies</option>
+              <option value="tv">Series</option>
+            </select>
+            <select id="genreSelect" class="form-select bg-purple text-orange font-geo">
+              <option value="">All Genres</option>
+              <option value="28">Action</option>
+              <option value="35">Comedy</option>
+              <option value="18">Drama</option>
+              <option value="27">Horror</option>
+              <option value="10749">Romance</option>
+              <option value="16">Animation</option>
+            </select>
+            <div class="input-group">
+              <input type="text" id="searchInput" class="form-control bg-purple text-white font-geo" placeholder="Search...">
+              <button class="btn btn-warning font-geo" onclick="searchMovies()">Search</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </header>
-  <main>
-    <div id="movieList" class="movie-grid"></div>
-  </main>
-<div id="videoModal" class="hidden">
-  <video id="videoPlayer" controls class="hidden"></video>
-  <iframe id="youtubePlayer" class="hidden" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
-  <button onclick="closeVideo()">Close</button>
-</div>
 
+  <main class="container py-4">
+    <div id="movieList" class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4"></div>
+  </main>
+
+  <div id="videoModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content bg-dark">
+        <div class="modal-header border-0">
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-0">
+          <video id="videoPlayer" class="w-100 d-none" controls></video>
+          <iframe id="youtubePlayer" class="w-100 d-none" height="500" frameborder="0" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-primary py-3 text-center">
+    <div class="container">
+      <p class="m-0">© 2025 Error 19. All rights reserved.</p>
+      <div class="footer-links mt-2">
+        <a href="#" class="text-warning text-decoration-none mx-2">Privacy Policy</a>
+        <a href="#" class="text-warning text-decoration-none mx-2">Terms of Service</a>
+        <a href="#" class="text-warning text-decoration-none mx-2">Contact: +27661078458</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
   <script src="script.js"></script>
 </body>
-<footer>
-  <p>© 2025 Error 19. All rights reserved.</p>
-  <div class="footer-links">
-    <a href="#">Privacy Policy</a> |
-    <a href="#">Terms of Service</a> |
-    <a href="#">Contact: +27661078458</a>
-  </div>
-</footer>
 </html>

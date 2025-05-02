@@ -18,7 +18,7 @@ async function searchMovies() {
     movieList.innerHTML = "";
 
     if (!data.results || data.results.length === 0) {
-      movieList.innerHTML = "<p>No results found.</p>";
+      movieList.innerHTML = "<p class='text-center py-4'>No results found.</p>";
       return;
     }
 
@@ -28,14 +28,16 @@ async function searchMovies() {
       const trailerLink = await fetchTrailer(item.id, contentType);
 
       const card = document.createElement("div");
-      card.className = "movie-card";
+      card.className = "col";
       card.innerHTML = `
-        <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" alt="${item.title || item.name}" class="movie-poster" />
-        <div class="movie-info">
-          <h3 class="movie-title">${item.title || item.name}</h3>
-          <p class="movie-overview">${(item.overview || "").substring(0, 100)}...</p>
-          <p class="movie-date"><strong>Release:</strong> ${item.release_date || item.first_air_date}</p>
-          <button class="watch-btn">▶ Watch</button>
+        <div class="movie-card h-100">
+          <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" alt="${item.title || item.name}" class="movie-poster w-100" />
+          <div class="movie-info p-2">
+            <h3 class="movie-title">${item.title || item.name}</h3>
+            <p class="movie-overview">${(item.overview || "").substring(0, 100)}...</p>
+            <p class="movie-date"><strong>Release:</strong> ${item.release_date || item.first_air_date}</p>
+            <button class="watch-btn btn btn-sm btn-warning w-100">▶ Watch</button>
+          </div>
         </div>
       `;
 
@@ -59,9 +61,12 @@ async function searchMovies() {
     }
   } catch (error) {
     console.error("Error fetching movies:", error);
+    const movieList = document.getElementById("movieList");
+    if (movieList) {
+      movieList.innerHTML = `<p class='text-center py-4 text-danger'>Error loading movies. Please try again.</p>`;
+    }
   }
 }
-
 
 // Function to fetch the trailer of a movie
 async function fetchTrailer(movieId, type) {
@@ -80,94 +85,116 @@ async function fetchTrailer(movieId, type) {
   return null;
 }
 
-// Function to play a video when clicked
+// Function to play a video when clicked (using Bootstrap modal)
 function playVideo(videoSrc) {
-  const modal = document.getElementById("videoModal");
+  const modal = new bootstrap.Modal(document.getElementById('videoModal'));
   const video = document.getElementById("videoPlayer");
   const youtube = document.getElementById("youtubePlayer");
 
-  modal.classList.remove("hidden");
-  setTimeout(() => modal.classList.add("active"), 45);
-
   if (videoSrc.includes("youtube.com")) {
-    video.classList.add("hidden");
-    youtube.classList.remove("hidden");
+    video.classList.add("d-none");
+    youtube.classList.remove("d-none");
     youtube.src = videoSrc + "?autoplay=1";
   } else {
-    youtube.classList.add("hidden");
-    video.classList.remove("hidden");
+    youtube.classList.add("d-none");
+    video.classList.remove("d-none");
     video.src = videoSrc;
     video.play();
   }
+
+  modal.show();
 }
 
 // Function to close the video modal
 function closeVideo() {
-  const modal = document.getElementById("videoModal");
+  const modal = bootstrap.Modal.getInstance(document.getElementById('videoModal'));
   const video = document.getElementById("videoPlayer");
   const youtube = document.getElementById("youtubePlayer");
 
-  modal.classList.remove("active");
-
-  setTimeout(() => {
-    modal.classList.add("hidden");
-    video.pause();
-    video.src = "";
-    youtube.src = "";
-  }, 300);
+  modal.hide();
+  video.pause();
+  video.src = "";
+  youtube.src = "";
 }
 
 // Load default movies on page load
-window.onload = () => {
+document.addEventListener("DOMContentLoaded", () => {
+  // Handle search functionality
   const input = document.getElementById("searchInput");
   if (input) {
     input.value = "new"; // Default search query
     searchMovies();
   }
-};
 
-// Fallback if using separate homepage grid
-document.addEventListener("DOMContentLoaded", () => {
+  // Handle movie grid population for homepage
   const movieGrid = document.getElementById("movieGrid");
-  if (!movieGrid) return; // Return early if movieGrid is not found
+  if (movieGrid) {
+    const category = "popular"; // You can change this category to "top_rated", "now_playing", etc.
+    const contentType = "movie"; // Change this to "tv" for TV shows
 
-  const category = "popular"; // You can change this category to "top_rated", "now_playing", etc.
-  const contentType = "movie"; // Change this to "tv" for TV shows
-
-  fetch(`/api/movies?category=${category}&type=${contentType}`)
-    .then(response => response.json())
-    .then(data => {
-      displayMovies(data.results, contentType);
-    })
-    .catch(error => {
-      console.error("Error fetching movies:", error);
-    });
+    fetch(`/api/movies?category=${category}&type=${contentType}`)
+      .then(response => response.json())
+      .then(data => {
+        displayMovies(data.results, contentType);
+      })
+      .catch(error => {
+        console.error("Error fetching movies:", error);
+      });
+  }
 
   // Function to display movies in the grid
   function displayMovies(movies, contentType) {
+    const movieGrid = document.getElementById("movieGrid");
+    if (!movieGrid) return;
+
     movieGrid.innerHTML = "";
 
     movies.forEach(movie => {
-      const card = document.createElement("div");
-      card.classList.add("movie-card");
+      if (!movie.poster_path) return;
+
+      const col = document.createElement("div");
+      col.className = "col";
 
       const title = movie.title || movie.name;
-      const posterPath = movie.poster_path
-        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-        : "https://via.placeholder.com/500x750?text=No+Image";
+      const posterPath = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
 
-      card.innerHTML = `
-        <img src="${posterPath}" class="movie-poster" />
-        <h3 class="movie-title">${title}</h3>
+      col.innerHTML = `
+        <div class="movie-card h-100">
+          <img src="${posterPath}" alt="${title}" class="movie-poster w-100" />
+          <div class="movie-info p-2">
+            <h3 class="movie-title">${title}</h3>
+            <button class="btn btn-sm btn-warning w-100 details-btn">View Details</button>
+          </div>
+        </div>
       `;
 
       // Add click listener to go to details page
-      card.addEventListener("click", () => {
-        window.location.href = `movie.html?id=${movie.id}&type=${contentType}`;
+      const detailsBtn = col.querySelector(".details-btn");
+      detailsBtn.addEventListener("click", () => {
+        const selectedMovie = {
+          id: movie.id,
+          title: title,
+          overview: movie.overview,
+          poster_path: movie.poster_path,
+          release_date: movie.release_date || movie.first_air_date,
+          type: contentType
+        };
+        localStorage.setItem("selectedMovie", JSON.stringify(selectedMovie));
+        window.location.href = "movie.html";
       });
 
-      movieGrid.appendChild(card);
+      movieGrid.appendChild(col);
     });
   }
+});
+
+// Event listener for modal close to reset video players
+document.getElementById('videoModal')?.addEventListener('hidden.bs.modal', function () {
+  const video = document.getElementById("videoPlayer");
+  const youtube = document.getElementById("youtubePlayer");
+  
+  video.pause();
+  video.src = "";
+  youtube.src = "";
 });
 

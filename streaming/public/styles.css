@@ -2,13 +2,24 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #441752; /* Deep Charcoal background color */
+  background: #FEBA17; /* Deep Charcoal background color */
   color: #F5F5F5; /* Off White text color */
 }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-image: url('../assets/tmnt.jpeg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: #FEBA17;
+}
+
+
 
 /* Header Styling */
 header {
-  background: #1D1E60; /* Deep Blue background */
+  background: #3D365C; /* Deep Blue background */
   padding: 1em;
   display: flex;
   gap: 10px;
@@ -91,7 +102,7 @@ button:hover {
 }
 
 .movie-card:hover {
-  background: #997C70; /* Lighter color on hover */
+  background: #000000; /* Lighter color on hover */
   transform: scale(1.10); /* Slight zoom effect on hover */
 }
 
@@ -112,7 +123,7 @@ button:hover {
 .movie-title {
   margin: 0;
   font-size: 18px;
-  color: #8F87F1; /* Consistent title color */
+  color: #F75A5A; /* Consistent title color */
   font-family: 'Roboto', sans-serif;
 }
 
@@ -172,7 +183,7 @@ button:hover {
 
 /* Footer Styling */
 footer {
-  background: #1D1E60; /* Deep blue background for footer */
+  background: #3D365C; /* Deep blue background for footer */
   color: #F5F5F5; /* Off white text */
   text-align: center;
   padding: 1.5rem 1rem;
@@ -251,4 +262,130 @@ header h1 {
 
 .movie-trailer {
   margin-top: 20px;
+}
+
+/* Custom Font Classes */
+.font-geo {
+  font-family: 'Geo', sans-serif;
+}
+
+.font-space-mono {
+  font-family: 'Space Mono', monospace;
+}
+
+.font-roboto {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Custom Colors */
+.bg-purple {
+  background-color: #8F87F1;
+}
+
+.text-orange {
+  color: #FF7F3E;
+}
+
+/* Movie Card Styles */
+.movie-card {
+  background: #685752;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  height: 100%;
+}
+
+.movie-card:hover {
+  background: #000000;
+  transform: scale(1.05);
+}
+
+.movie-poster {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.movie-info {
+  padding: 10px;
+}
+
+.movie-title {
+  margin: 0;
+  font-size: 1rem;
+  color: #F75A5A;
+}
+
+.movie-overview {
+  font-size: 0.75rem;
+  margin: 8px 0;
+  color: white;
+  font-family: 'Space Mono', monospace;
+}
+
+.movie-date {
+  font-size: 0.8rem;
+  color: #FF7F3E;
+}
+
+/* Movie Details Page Styles */
+.movie-detail-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+  background-color: #111;
+  color: #fff;
+  border-radius: 10px;
+}
+
+.movie-detail-poster {
+  max-width: 100%;
+  border-radius: 10px;
+}
+
+.movie-detail-info {
+  flex: 1;
+  min-width: 250px;
+}
+
+.movie-trailer {
+  margin-top: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .movie-detail-card {
+    flex-direction: column;
+  }
+  
+  .movie-poster {
+    height: 250px;
+  }
+}
+
+@media (max-width: 576px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .movie-poster {
+    height: 200px;
+  }
+}
+
+/* Custom Search Input Styling */
+#searchInput {
+  color: #FF7F3E; /* Orange text by default */
+}
+
+#searchInput:focus, 
+#searchInput:not(:placeholder-shown) {
+  color: #000000 !important; /* Black when typing */
+  background-color: #FFFFFF !important; /* White background when typing */
+}
+
+#searchInput::placeholder {
+  color: #FF7F3E; /* Orange placeholder */
 }
