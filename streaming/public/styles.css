@@ -389,3 +389,71 @@ header h1 {
 #searchInput::placeholder {
   color: #FF7F3E; /* Orange placeholder */
 }
+
+/* Search Dropdown Styles */
+.search-dropdown {
+  background-color: #3D365C;
+  border: 1px solid #8F87F1;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: -1px;
+}
+
+.search-dropdown-item {
+  padding: 10px 15px;
+  color: #FF7F3E;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-dropdown-item:hover {
+  background-color: #8F87F1;
+  color: #1D1E60;
+}
+
+.search-dropdown-item img {
+  width: 40px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.search-dropdown-item .title {
+  font-weight: bold;
+  font-family: 'Geo', sans-serif;
+}
+
+.search-dropdown-item .details {
+  font-size: 0.8rem;
+  color: #F19FFF;
+  font-family: 'Space Mono', monospace;
+}
+
+/* Search input focus state */
+#searchInput:focus {
+  box-shadow: none;
+  border-color: #FF7F3E;
+}
+
+.search-dropdown {
+  background-color: #3D365C;
+  border: 1px solid #8F87F1;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.search-dropdown-item {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.search-dropdown-item:hover {
+  background-color: #8F87F1;
+}

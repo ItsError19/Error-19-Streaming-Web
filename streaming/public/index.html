@@ -35,10 +35,12 @@
               <option value="10749">Romance</option>
               <option value="16">Animation</option>
             </select>
-            <div class="input-group">
-              <input type="text" id="searchInput" class="form-control bg-purple text-white font-geo" placeholder="Search...">
+             <div class="input-group search-container">
+             <input type="text" id="searchInput" class="form-control bg-purple text-white font-geo" 
+             placeholder="Search..." autocomplete="off">
               <button class="btn btn-warning font-geo" onclick="searchMovies()">Search</button>
-            </div>
+             <div id="searchDropdown" class="search-dropdown"></div>
+           </div>
           </div>
         </div>
       </div>

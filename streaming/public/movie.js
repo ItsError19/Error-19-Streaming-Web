@@ -1,100 +1,182 @@
 // public/movie.js
-const urlParams = new URLSearchParams(window.location.search);
-const movieId = urlParams.get("id");
-const contentType = urlParams.get("type");
+document.addEventListener('DOMContentLoaded', function() {
+    // Get parameters from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const movieId = urlParams.get("id");
+    const contentType = urlParams.get("type") || "movie"; // Default to movie if type not specified
 
-async function fetchMovieDetails() {
-  try {
-    // Fetch movie details from the backend API
-    const res = await fetch(`/api/movie?id=${movieId}&type=${contentType}`);
-    const movie = await res.json();
+    // Check if we have localStorage data (your existing approach)
+    const selectedMovie = JSON.parse(localStorage.getItem("selectedMovie"));
 
-    if (!movie) {
-      document.getElementById("movieDetails").innerHTML = "<p>Movie details not found.</p>";
-      return;
+    // Decide which data source to use
+    if (selectedMovie) {
+        displayMovieDetailsFromLocalStorage(selectedMovie);
+    } else if (movieId) {
+        fetchMovieDetails(movieId, contentType);
+    } else {
+        displayError("No movie ID provided. Please select a movie from the homepage.");
     }
+});
 
-    // Fetch trailer link for the movie
-    const trailerLink = await fetchTrailer(movieId, contentType);
+async function fetchMovieDetails(movieId, contentType) {
+    try {
+        // Show loading state
+        document.getElementById("movieDetails").innerHTML = `
+            <div class="text-center py-4">
+                <div class="spinner-border text-warning" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading movie details...</p>
+            </div>
+        `;
 
+        // Fetch movie details
+        const [movieResponse, videosResponse] = await Promise.all([
+            fetch(`/api/movie?id=${movieId}&type=${contentType}`),
+            fetch(`/api/videos?id=${movieId}&type=${contentType}`)
+        ]);
+
+        if (!movieResponse.ok || !videosResponse.ok) {
+            throw new Error('Failed to fetch movie data');
+        }
+
+        const movie = await movieResponse.json();
+        const videosData = await videosResponse.json();
+
+        if (!movie) {
+            throw new Error('Movie data not found');
+        }
+
+        // Display the movie details
+        displayMovieDetails(movie, videosData.results || []);
+
+    } catch (error) {
+        console.error("Error fetching movie details:", error);
+        displayError("Failed to load movie details. Please try again later.");
+    }
+}
+
+function displayMovieDetails(movie, videos) {
     const container = document.getElementById("movieDetails");
+    
+    // Find the best trailer (official YouTube trailer preferred)
+    const trailer = videos.find(v => 
+        v.type === "Trailer" && v.site === "YouTube"
+    ) || videos.find(v => v.site === "YouTube");
 
-    // Populate the movie details in the container
+    // Create the HTML content
     container.innerHTML = `
-      <div class="movie-card">
-        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" class="movie-poster" alt="${movie.title || movie.name}" />
-        <div class="movie-info">
-          <h3 class="movie-title">${movie.title || movie.name}</h3>
-          <p class="movie-overview">${movie.overview || "No overview available."}</p>
-          <p class="movie-date"><strong>Release Date:</strong> ${movie.release_date || movie.first_air_date}</p>
-          
-          <!-- Trailer Section -->
-          ${trailerLink ? `
-            <h4>Trailer</h4>
-            <iframe width="100%" height="315" src="${trailerLink}" frameborder="0" allowfullscreen></iframe>
-          ` : '<p>No trailer available.</p>'}
-          
-          <!-- Sample Movie Section -->
-          <h4>Sample Movie</h4>
-          <video controls width="100%">
-            <source src="/videos/sample.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+        <div class="row">
+            <div class="col-md-4 mb-4 mb-md-0">
+                <img src="${movie.poster_path ? 
+                    `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 
+                    'fallback-poster.jpg'}" 
+                     alt="${movie.title || movie.name}" 
+                     class="img-fluid rounded shadow movie-detail-poster"
+                     onerror="this.src='fallback-poster.jpg'">
+            </div>
+            <div class="col-md-8">
+                <h2 class="text-warning">${movie.title || movie.name}</h2>
+                ${movie.tagline ? `<p class="text-muted font-italic">${movie.tagline}</p>` : ''}
+                
+                <div class="mb-3">
+                    <span class="badge bg-primary me-2">${movie.vote_average ? movie.vote_average.toFixed(1) + ' ★' : 'NR'}</span>
+                    ${movie.release_date || movie.first_air_date ? 
+                        `<span class="text-light me-2">${movie.release_date || movie.first_air_date}</span>` : ''}
+                    ${movie.runtime ? `<span class="text-light">${Math.floor(movie.runtime/60)}h ${movie.runtime%60}m</span>` : ''}
+                </div>
+                
+                <h4 class="text-warning mt-4">Overview</h4>
+                <p>${movie.overview || "No overview available."}</p>
+                
+                ${movie.genres && movie.genres.length > 0 ? `
+                    <div class="mb-3">
+                        <strong>Genres:</strong> 
+                        ${movie.genres.map(genre => `<span class="badge bg-secondary me-1">${genre.name}</span>`).join('')}
+                    </div>
+                ` : ''}
+                
+                <!-- Trailer Section -->
+                <h4 class="text-warning mt-4">Trailer</h4>
+                ${trailer ? `
+                    <div class="ratio ratio-16x9 mb-4">
+                        <iframe src="https://www.youtube.com/embed/${trailer.key}" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen
+                                class="rounded"></iframe>
+                    </div>
+                ` : `
+                    <div class="alert alert-info">
+                        No trailer available for this movie.
+                    </div>
+                `}
+                
+                <!-- Sample Video Section (if you want to keep this) -->
+                <h4 class="text-warning mt-4">Preview</h4>
+                <div class="ratio ratio-16x9">
+                    <video controls class="rounded">
+                        <source src="/videos/sample.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
         </div>
-      </div>
     `;
-  } catch (error) {
-    console.error("Error fetching movie details:", error);
-    document.getElementById("movieDetails").innerHTML = "<p>Failed to load movie details.</p>";
-  }
 }
 
-// Fetch trailer for the movie
-async function fetchTrailer(id, type) {
-  try {
-    const res = await fetch(`/api/videos?id=${id}&type=${type}`);
-    const data = await res.json();
-
-    if (data.results && data.results.length > 0) {
-      const trailer = data.results.find(v => v.type === "Trailer" && v.site === "YouTube");
-      if (trailer) return `https://www.youtube.com/embed/${trailer.key}`;
-    }
-  } catch (e) {
-    console.error("Error fetching trailer:", e);
-  }
-  return "";
+function displayMovieDetailsFromLocalStorage(movie) {
+    const container = document.getElementById("movieDetails");
+    
+    container.innerHTML = `
+        <div class="row">
+            <div class="col-md-4 mb-4 mb-md-0">
+                <img src="${movie.poster_path ? 
+                    `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 
+                    'fallback-poster.jpg'}" 
+                     alt="${movie.title}" 
+                     class="img-fluid rounded shadow movie-detail-poster"
+                     onerror="this.src='fallback-poster.jpg'">
+            </div>
+            <div class="col-md-8">
+                <h2 class="text-warning">${movie.title}</h2>
+                
+                <div class="mb-3">
+                    ${movie.release_date ? `<span class="text-light me-2">${movie.release_date}</span>` : ''}
+                </div>
+                
+                <h4 class="text-warning mt-4">Overview</h4>
+                <p>${movie.overview || "No overview available."}</p>
+                
+                <!-- Trailer Section -->
+                <h4 class="text-warning mt-4">Trailer</h4>
+                ${movie.trailer ? `
+                    <div class="ratio ratio-16x9 mb-4">
+                        <iframe src="${movie.trailer}" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen
+                                class="rounded"></iframe>
+                    </div>
+                ` : `
+                    <div class="alert alert-info">
+                        No trailer available for this movie.
+                    </div>
+                `}
+            </div>
+        </div>
+    `;
 }
 
-// Call the function to fetch and display movie details
-fetchMovieDetails();
-
-// movie.js
-
-// Get the selected movie from localStorage
-const selectedMovie = JSON.parse(localStorage.getItem("selectedMovie"));
-
-// Get the container where details will be shown
-const container = document.getElementById("movieDetails");
-
-// Check if movie data exists
-if (!selectedMovie) {
-  container.innerHTML = "<p>No movie data available. Please go back and select a movie.</p>";
-} else {
-  container.innerHTML = `
-    <div class="movie-detail-card">
-      <img src="https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}" alt="${selectedMovie.title}" class="movie-detail-poster" />
-      <div class="movie-detail-info">
-        <h2>${selectedMovie.title}</h2>
-        <p><strong>Release Date:</strong> ${selectedMovie.release_date}</p>
-        <p><strong>Overview:</strong> ${selectedMovie.overview}</p>
-        ${selectedMovie.trailer ? `
-          <div class="movie-trailer">
-            <iframe width="100%" height="315" src="${selectedMovie.trailer}" 
-              title="YouTube trailer" frameborder="0" allowfullscreen></iframe>
-          </div>` : `<p><em>No trailer available.</em></p>`}
-      </div>
-    </div>
-  `;
+function displayError(message) {
+    const container = document.getElementById("movieDetails") || document.body;
+    container.innerHTML = `
+        <div class="alert alert-danger">
+            ${message}
+            <div class="mt-2">
+                <a href="index.html" class="btn btn-warning">Back to Homepage</a>
+            </div>
+        </div>
+    `;
 }
-
 
