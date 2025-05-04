@@ -457,3 +457,154 @@ header h1 {
 .search-dropdown-item:hover {
   background-color: #8F87F1;
 }
+
+/* Search Dropdown Styles */
+.search-container {
+  position: relative;
+  width: 100%; /* Ensure it takes full width */
+}
+
+.search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: #3D365C;
+  border: 1px solid #8F87F1;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 400px;
+  overflow-y: auto;
+  display: none;
+  margin-top: -1px; /* Remove gap between input and dropdown */
+}
+
+.search-dropdown-item {
+  padding: 10px 15px;
+  color: #FF7F3E;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-dropdown-item:hover {
+  background-color: #8F87F1;
+  color: #1D1E60;
+}
+
+.search-dropdown-item img {
+  width: 40px;
+  height: 60px;
+  object-fit: cover;
+  margin-right: 10px;
+  border-radius: 4px;
+}
+
+.search-dropdown-item .title {
+  font-weight: bold;
+  font-family: 'Geo', sans-serif;
+}
+
+.search-dropdown-item .details {
+  font-size: 0.8rem;
+  color: #F19FFF;
+  font-family: 'Space Mono', monospace;
+}
+
+/* Ensure search input and button are properly aligned */
+.input-group {
+  position: relative;
+}
+
+/* Add to your styles.css */
+.search-dropdown-item.highlighted {
+  background-color: #8F87F1;
+  color: #1D1E60;
+}
+
+.search-dropdown-item:focus {
+  outline: 2px solid #FF7F3E;
+  outline-offset: -2px;
+}
+
+/* Movie Metadata Styles */
+.movie-metadata {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.metadata-item {
+    margin-bottom: 10px;
+}
+
+.metadata-item h5 {
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    color: #FEBA17;
+}
+
+.metadata-item p {
+    font-size: 0.9rem;
+    margin: 0;
+    color: #fff;
+}
+
+/* Genres list styling */
+.genres-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+/* Movie Meta Info */
+.movie-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* Cast Grid */
+.cast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1.5rem;
+}
+
+.cast-member {
+    text-align: center;
+}
+
+.cast-photo {
+    width: 100%;
+    aspect-ratio: 2/3;
+    object-fit: cover;
+    margin-bottom: 0.5rem;
+}
+
+.cast-name {
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cast-character {
+    font-size: 0.8rem;
+    color: #aaa;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .cast-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 1rem;
+    }
+}

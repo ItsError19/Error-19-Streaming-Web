@@ -1,4 +1,3 @@
-// public/movie.js
 document.addEventListener('DOMContentLoaded', function() {
     // Get parameters from URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -64,6 +63,27 @@ function displayMovieDetails(movie, videos) {
         v.type === "Trailer" && v.site === "YouTube"
     ) || videos.find(v => v.site === "YouTube");
 
+    // Format duration
+    let duration = '';
+    if (movie.runtime) {
+        const hours = Math.floor(movie.runtime / 60);
+        const minutes = movie.runtime % 60;
+        duration = `${hours}h ${minutes}m`;
+    }
+
+    // Find director from credits
+    let director = '';
+    if (movie.credits && movie.credits.crew) {
+        const directorInfo = movie.credits.crew.find(person => person.job === "Director");
+        director = directorInfo ? directorInfo.name : 'Unknown';
+    }
+
+    // Get top 5 actors
+    let actors = [];
+    if (movie.credits && movie.credits.cast) {
+        actors = movie.credits.cast.slice(0, 5).map(actor => actor.name);
+    }
+
     // Create the HTML content
     container.innerHTML = `
         <div class="row">
@@ -79,50 +99,90 @@ function displayMovieDetails(movie, videos) {
                 <h2 class="text-warning">${movie.title || movie.name}</h2>
                 ${movie.tagline ? `<p class="text-muted font-italic">${movie.tagline}</p>` : ''}
                 
-                <div class="mb-3">
-                    <span class="badge bg-primary me-2">${movie.vote_average ? movie.vote_average.toFixed(1) + ' ★' : 'NR'}</span>
-                    ${movie.release_date || movie.first_air_date ? 
-                        `<span class="text-light me-2">${movie.release_date || movie.first_air_date}</span>` : ''}
-                    ${movie.runtime ? `<span class="text-light">${Math.floor(movie.runtime/60)}h ${movie.runtime%60}m</span>` : ''}
+                <!-- Movie Metadata Section -->
+                <div class="movie-metadata mt-4 mb-4">
+                    <!-- Ratings -->
+                    <div class="metadata-item">
+                        <h5 class="text-warning">Rating</h5>
+                        <p>
+                            <span class="badge bg-primary me-2">
+                                ${movie.vote_average ? movie.vote_average.toFixed(1) + ' ★' : 'Not Rated'}
+                            </span>
+                            (${movie.vote_count ? movie.vote_count.toLocaleString() : '0'} votes)
+                        </p>
+                    </div>
+                    
+                    <!-- Release Date -->
+                    <div class="metadata-item">
+                        <h5 class="text-warning">Release Date</h5>
+                        <p>${movie.release_date || movie.first_air_date ? formatDate(movie.release_date || movie.first_air_date) : 'Unknown'}</p>
+                    </div>
+                    
+                    <!-- Duration -->
+                    ${duration ? `
+                    <div class="metadata-item">
+                        <h5 class="text-warning">Duration</h5>
+                        <p>${duration}</p>
+                    </div>
+                    ` : ''}
+                    
+                    <!-- Director -->
+                    <div class="metadata-item">
+                        <h5 class="text-warning">Director</h5>
+                        <p>${director || 'Unknown'}</p>
+                    </div>
+                    
+                    <!-- Actors -->
+                    ${actors.length > 0 ? `
+                    <div class="metadata-item">
+                        <h5 class="text-warning">Main Cast</h5>
+                        <p>${actors.join(', ')}</p>
+                    </div>
+                    ` : ''}
+                    
+                    <!-- Genres -->
+                    ${movie.genres && movie.genres.length > 0 ? `
+                    <div class="metadata-item">
+                        <h5 class="text-warning">Genres</h5>
+                        <div class="genres-list">
+                            ${movie.genres.map(genre => `<span class="badge bg-secondary me-1">${genre.name}</span>`).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
                 </div>
                 
-                <h4 class="text-warning mt-4">Overview</h4>
-                <p>${movie.overview || "No overview available."}</p>
-                
-                ${movie.genres && movie.genres.length > 0 ? `
-                    <div class="mb-3">
-                        <strong>Genres:</strong> 
-                        ${movie.genres.map(genre => `<span class="badge bg-secondary me-1">${genre.name}</span>`).join('')}
-                    </div>
-                ` : ''}
+                <!-- Overview -->
+                <div class="mb-4">
+                    <h4 class="text-warning">Overview</h4>
+                    <p>${movie.overview || "No overview available."}</p>
+                </div>
                 
                 <!-- Trailer Section -->
-                <h4 class="text-warning mt-4">Trailer</h4>
-                ${trailer ? `
-                    <div class="ratio ratio-16x9 mb-4">
-                        <iframe src="https://www.youtube.com/embed/${trailer.key}" 
-                                frameborder="0" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                allowfullscreen
-                                class="rounded"></iframe>
-                    </div>
-                ` : `
-                    <div class="alert alert-info">
-                        No trailer available for this movie.
-                    </div>
-                `}
-                
-                <!-- Sample Video Section (if you want to keep this) -->
-                <h4 class="text-warning mt-4">Preview</h4>
-                <div class="ratio ratio-16x9">
-                    <video controls class="rounded">
-                        <source src="/videos/sample.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
+                <div class="mb-4">
+                    <h4 class="text-warning">Trailer</h4>
+                    ${trailer ? `
+                        <div class="ratio ratio-16x9 mb-4">
+                            <iframe src="https://www.youtube.com/embed/${trailer.key}" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen
+                                    class="rounded"></iframe>
+                        </div>
+                    ` : `
+                        <div class="alert alert-info">
+                            No trailer available for this movie.
+                        </div>
+                    `}
                 </div>
             </div>
         </div>
     `;
+}
+
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
 }
 
 function displayMovieDetailsFromLocalStorage(movie) {
@@ -179,4 +239,3 @@ function displayError(message) {
         </div>
     `;
 }
-

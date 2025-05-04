@@ -5,9 +5,14 @@ const contentTypeSelect = document.getElementById('contentType');
 const genreSelect = document.getElementById('genreSelect');
 const movieList = document.getElementById('movieList');
 let searchTimeout;
+let hideTimeout;
+let currentHighlightedIndex = -1;
 
-// Search with dropdown functionality
-if (searchInput) {
+// Initialize search functionality
+function initSearch() {
+  if (!searchInput || !searchDropdown) return;
+
+  // Input event with debouncing
   searchInput.addEventListener('input', function() {
     clearTimeout(searchTimeout);
     const query = this.value.trim();
@@ -21,36 +26,102 @@ if (searchInput) {
     }
   });
 
-  // Handle Enter key press
+  // Enter key to search
   searchInput.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
       searchMovies();
+      hideSearchDropdown();
     }
+  });
+
+  // Keyboard navigation
+  searchInput.addEventListener('keydown', function(e) {
+    const items = searchDropdown.querySelectorAll('.search-dropdown-item');
+    if (!items.length) return;
+
+    switch(e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        currentHighlightedIndex = Math.min(currentHighlightedIndex + 1, items.length - 1);
+        highlightItem(items[currentHighlightedIndex]);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        currentHighlightedIndex = Math.max(currentHighlightedIndex - 1, -1);
+        if (currentHighlightedIndex === -1) {
+          removeHighlights(items);
+          searchInput.focus();
+        } else {
+          highlightItem(items[currentHighlightedIndex]);
+        }
+        break;
+      case 'Enter':
+        if (currentHighlightedIndex >= 0) {
+          e.preventDefault();
+          items[currentHighlightedIndex].click();
+        }
+        break;
+      case 'Escape':
+        hideSearchDropdown();
+        searchInput.focus();
+        break;
+    }
+  });
+
+  // Show dropdown when input is focused (if there are results)
+  searchInput.addEventListener('focus', function() {
+    if (searchDropdown.children.length > 0) {
+      showSearchDropdown();
+    }
+  });
+
+  // Prevent immediate hide when moving to dropdown
+  searchDropdown.addEventListener('mouseenter', cancelHide);
+  searchDropdown.addEventListener('mouseleave', function() {
+    hideSearchDropdown();
   });
 }
 
-// Close dropdown when clicking outside
-document.addEventListener('click', function(event) {
-  if (!event.target.closest('.search-container')) {
-    hideSearchDropdown();
+// Highlight dropdown item
+function highlightItem(item) {
+  const items = searchDropdown.querySelectorAll('.search-dropdown-item');
+  items.forEach(i => i.classList.remove('highlighted'));
+  if (item) {
+    item.classList.add('highlighted');
+    item.scrollIntoView({ block: 'nearest' });
   }
-});
+}
+
+// Remove all highlights
+function removeHighlights(items) {
+  items.forEach(i => i.classList.remove('highlighted'));
+  currentHighlightedIndex = -1;
+}
 
 // Fetch search suggestions for dropdown
 async function fetchSearchSuggestions(query) {
   try {
+    // Show loading state
+    searchDropdown.innerHTML = '<div class="search-dropdown-item"><div class="text-center py-2">Loading...</div></div>';
+    showSearchDropdown();
+    
     const contentType = contentTypeSelect?.value || 'movie';
     const response = await fetch(`/api/search?query=${encodeURIComponent(query)}&type=${contentType}`);
+    
+    if (!response.ok) throw new Error('Network response was not ok');
+    
     const results = await response.json();
     
     if (results.length > 0) {
       displaySearchDropdown(results);
     } else {
-      hideSearchDropdown();
+      searchDropdown.innerHTML = '<div class="search-dropdown-item"><div class="text-center py-2">No results found</div></div>';
+      showSearchDropdown();
     }
   } catch (error) {
     console.error('Error fetching search suggestions:', error);
-    hideSearchDropdown();
+    searchDropdown.innerHTML = '<div class="search-dropdown-item"><div class="text-center py-2 text-danger">Error loading results</div></div>';
+    showSearchDropdown();
   }
 }
 
@@ -59,19 +130,19 @@ function displaySearchDropdown(results) {
   if (!searchDropdown) return;
   
   searchDropdown.innerHTML = '';
+  currentHighlightedIndex = -1;
   
-  results.slice(0, 5).forEach(item => {
+  results.slice(0, 5).forEach((item, index) => {
     const itemElement = document.createElement('div');
-    itemElement.className = 'search-dropdown-item d-flex align-items-center p-2';
+    itemElement.className = 'search-dropdown-item';
+    itemElement.tabIndex = 0;
     itemElement.innerHTML = `
       <img src="${item.poster_path ? 
         `https://image.tmdb.org/t/p/w92${item.poster_path}` : 
         'placeholder-poster.jpg'}" 
            alt="${item.title || item.name}"
-           class="rounded"
-           onerror="this.src='placeholder-poster.jpg'"
-           width="40" height="60">
-      <div class="ms-2">
+           onerror="this.src='placeholder-poster.jpg'">
+      <div>
         <div class="title">${item.title || item.name}</div>
         <div class="details">
           ${item.release_date ? item.release_date.substring(0, 4) : ''}
@@ -84,17 +155,45 @@ function displaySearchDropdown(results) {
       selectSearchItem(item);
     });
     
+    itemElement.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        selectSearchItem(item);
+      }
+    });
+    
+    itemElement.addEventListener('mouseenter', () => {
+      currentHighlightedIndex = index;
+      highlightItem(itemElement);
+      cancelHide();
+    });
+    
     searchDropdown.appendChild(itemElement);
   });
   
-  searchDropdown.classList.remove('d-none');
+  showSearchDropdown();
+}
+
+// Show search dropdown
+function showSearchDropdown() {
+  if (searchDropdown) {
+    clearTimeout(hideTimeout);
+    searchDropdown.style.display = 'block';
+  }
 }
 
 // Hide search dropdown
 function hideSearchDropdown() {
   if (searchDropdown) {
-    searchDropdown.classList.add('d-none');
+    hideTimeout = setTimeout(() => {
+      searchDropdown.style.display = 'none';
+      currentHighlightedIndex = -1;
+    }, 200);
   }
+}
+
+// Cancel pending hide
+function cancelHide() {
+  clearTimeout(hideTimeout);
 }
 
 // Handle selection from search dropdown
@@ -224,54 +323,20 @@ async function fetchTrailer(movieId, type) {
   return null;
 }
 
-// Video player functions
-function playVideo(videoSrc) {
-  const modalElement = document.getElementById('videoModal');
-  if (!modalElement) return;
-  
-  const modal = new bootstrap.Modal(modalElement);
-  const video = document.getElementById("videoPlayer");
-  const youtube = document.getElementById("youtubePlayer");
-
-  if (videoSrc.includes("youtube.com")) {
-    video?.classList.add("d-none");
-    youtube?.classList.remove("d-none");
-    if (youtube) youtube.src = videoSrc + "?autoplay=1";
-  } else {
-    youtube?.classList.add("d-none");
-    video?.classList.remove("d-none");
-    if (video) {
-      video.src = videoSrc;
-      video.play();
-    }
-  }
-
-  modal.show();
-}
-
-function closeVideo() {
-  const modalElement = document.getElementById('videoModal');
-  if (!modalElement) return;
-  
-  const modal = bootstrap.Modal.getInstance(modalElement);
-  const video = document.getElementById("videoPlayer");
-  const youtube = document.getElementById("youtubePlayer");
-
-  modal?.hide();
-  video?.pause();
-  if (video) video.src = "";
-  if (youtube) youtube.src = "";
-}
-
 // Initialize page
 document.addEventListener("DOMContentLoaded", () => {
+  initSearch();
+  
   // Load default movies if on homepage
   if (movieList && (!searchInput || !searchInput.value)) {
     searchMovies();
   }
 
-  // Handle modal close event
-  document.getElementById('videoModal')?.addEventListener('hidden.bs.modal', function () {
-    closeVideo();
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function(event) {
+    if (!event.target.closest('.search-container') && 
+        !event.target.classList.contains('search-dropdown-item')) {
+      hideSearchDropdown();
+    }
   });
 });
